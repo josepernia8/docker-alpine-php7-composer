@@ -1,0 +1,39 @@
+version: '2'
+## Created By José Pernía
+services:
+  db:
+    image: mariadb:10.2
+    container_name: container-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./db:/var/lib/mysql"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: container-api
+    privileged: true
+    depends_on:
+      - db
+    links:
+      - db
+    ports:
+      - "8000:8000"
+    restart: always
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: test
+      DB_USERNAM: test
+      DB_PASSWORD: test
+    volumes:
+      - "./../app:/var/www/html"
